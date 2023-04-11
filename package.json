@@ -9,6 +9,12 @@
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
+    "@nuxtjs/google-fonts": "^3.0.0",
+    "@nuxtjs/tailwindcss": "^6.6.5",
     "nuxt": "^3.3.2"
+  },
+  "dependencies": {
+    "@types/three": "^0.150.0",
+    "three": "^0.151.2"
   }
 }
