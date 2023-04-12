@@ -7,7 +7,6 @@
 </template>
 
 <script setup lang="ts">
-import { initAnimation } from '~~/composables/animations/initAnimation';
 
 const canvasElement: Ref<HTMLCanvasElement | null> = ref(null)
 
