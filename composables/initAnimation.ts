@@ -1,17 +1,17 @@
 import CustomSphere from "~~/background/sphere/CustomSphere";
 import Camera from "~~/background/camera/Camera";
 import Renderer from "~~/background/renderer/Renderer";
-import * as THREE from "three";
+import idleAnimation from "~~/background/sphere/idleAnimation";
+import {DirectionalLight,AmbientLight,Scene,Color} from "three";
 
 // return {sphere}
 
 export function initAnimation(canvas: HTMLElement) {
   const camera = new Camera(window.innerWidth / window.innerHeight);
   const renderer = new Renderer(canvas);
-  renderer.setAnimationLoop(animate);
 
-  const directionalLight = new THREE.DirectionalLight(0x00f1d8, 1);
-  const ambientLight = new THREE.AmbientLight(0x1d1d1f);
+  const directionalLight = new DirectionalLight(0x00f1d8, 1);
+  const ambientLight = new AmbientLight(0x1d1d1f);
   directionalLight.position.set(-1, 0.5, -0.5);
 
   let { x: fullWidth, y: fullHeight } = camera.getConvertedSizing();
@@ -22,49 +22,86 @@ export function initAnimation(canvas: HTMLElement) {
   sphere.rotateX(Math.PI / 16);
   sphere.rotateY(-Math.PI / 4);
 
-  const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x1d1d1f);
+  const scene = new Scene();
+  scene.background = new Color(0x1d1d1f);
 
   scene.add(sphere);
   scene.add(ambientLight);
   scene.add(directionalLight);
 
-  let test = 1;
-  window.addEventListener("scroll", (e) => {
-    sphere.position.setX(6 - window.scrollY / 100);
-    sphere.rotation.x = window.scrollY / 500;
-    test = 1 + window.scrollY / 1000;
-  });
+  sphere.addAnimation(
+    {
+      start: 0,
+      end: 713,
+      func: function(scrollY){
+        let scale = (scrollY - this.start)/this.end
+        let from = fullWidth/2
+        let to = -fullWidth/2
+        
+        let currentVal = from + (to - from) * scale
+        sphere.position.x += (currentVal - sphere.position.x) * 0.2
+      }
+    })
+    sphere.addAnimation(
+      {
+        start: 0,
+        end: 713,
+        func: function(scrollY){
+          let scale = (scrollY - this.start)/this.end
+          let from = 0
+          let to = -fullHeight/3
+          
+          let currentVal = from + (to - from) * scale
+          sphere.position.y += (currentVal - sphere.position.y) * 0.2
+        }
+      })
+      sphere.addAnimation(
+        {
+          start: 0,
+          end: 713,
+          func: function(scrollY){
+            let scale = (scrollY - this.start)/this.end
+            let from = Math.PI / 16
+            let to = -Math.PI / 2
+            
+            let currentVal = from + (to - from) * scale
+            sphere.rotation.x += (currentVal - sphere.rotation.x) * 0.2
+          }
+        })
+        // sphere.addAnimation(
+        //   {
+        //     start: 0,
+        //     end: 713,
+        //     func: function(scrollY){
+        //       let scale = (scrollY - this.start)/this.end
+        //       let from = 0
+        //       let to = 2
+              
+        //       let currentVal = from + (to - from) * scale
+        //       sphere.position.setZ(currentVal)
+        //     }
+        //   })
+  
 
-  const positionAttribute = sphere.geometry.clone().getAttribute("position") as THREE.BufferAttribute;
-  const normalAttribute = sphere.geometry.clone().getAttribute("normal") as THREE.BufferAttribute;
+  // let test = 1
+  // window.addEventListener("scroll", (e) => {
+    // sphere.position.setX(fullWidth / 2 - window.scrollY / 100);
+    // sphere.rotation.x =  Math.PI / 16 + window.scrollY / 500;
+    // test = 1 + window.scrollY / 1000;
 
-  let vertex = new THREE.Vector3();
-  let normal = new THREE.Vector3();
-
-  function animate(time: any) {
-    time = time / 2000;
-
-    for (let i = 0; i < sphere.geometry.attributes.position.count; i++) {
-      vertex.fromBufferAttribute(positionAttribute as THREE.BufferAttribute, i);
-      normal.fromBufferAttribute(normalAttribute as THREE.BufferAttribute, i);
-
-      const xangle = vertex.x * test + time;
-      const xsin = Math.sin(xangle);
-      const yangle = vertex.y + time;
-      const ycos = Math.cos(yangle);
-
-      sphere.geometry.attributes.position.setXYZ(
-        i,
-        vertex.x + normal.x * (xsin + ycos),
-        vertex.y + normal.y * (xsin + ycos),
-        vertex.z + normal.z * (xsin + ycos)
-      );
-    }
-
-    sphere.geometry.computeVertexNormals();
-    sphere.geometry.attributes.position.needsUpdate = true;
-
+    // });
+    
+    
+    function animate(time: any) {
+      window.requestAnimationFrame(animate)
+      time = time / 2000;
+      
+      idleAnimation(time,sphere)
+      sphere.animate(window.scrollY)
+    // console.log()
+    // sphere.animate(window.scrollY)
+    
     renderer.render(scene, camera);
   }
+  window.requestAnimationFrame(animate)
 }
