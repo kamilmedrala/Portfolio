@@ -2,12 +2,13 @@ import {SphereGeometry,MeshStandardMaterial,Mesh,FrontSide,Vector3,BufferAttribu
 import SphereAnimation from '../interfaces/SphereAnimation';
 export default class CustomSphere extends Mesh<SphereGeometry, MeshStandardMaterial>{
         
-    animationsArray: Array<SphereAnimation>;
     initialGeometry: BufferGeometry;
+    morph: number = 1;
+    animationsArray: Array<SphereAnimation>;
     
     constructor(radius:number,widthSegments:number,heightSegments:number){
         const geometry = new SphereGeometry(radius, widthSegments, heightSegments);
-        const material = new MeshStandardMaterial({wireframe:true, color: 0xffffff,roughness: 0.2 , side:FrontSide });
+        const material = new MeshStandardMaterial({wireframe:true, color: 0xffffff, side:FrontSide });
         super(geometry,material)
         this.initialGeometry = geometry.clone()
         this.animationsArray = []
@@ -24,6 +25,5 @@ export default class CustomSphere extends Mesh<SphereGeometry, MeshStandardMater
                     animation.func(pageScroll)
             }
         })
-        // select from animationsArray based on current position
     }
 }

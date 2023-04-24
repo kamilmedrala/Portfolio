@@ -13,7 +13,7 @@ export default function idleAnimation(time:number, sphere:CustomSphere){
         vertex.fromBufferAttribute(positionAttribute, i);
         normal.fromBufferAttribute(normalAttribute, i);
   
-        const xangle = vertex.x + time;
+        const xangle = vertex.x * sphere.morph + time;
         const xsin = Math.sin(xangle);
         const yangle = vertex.y + time;
         const ycos = Math.cos(yangle);
